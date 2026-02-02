@@ -51,9 +51,9 @@ final class TabManager: ObservableObject {
         } else if input.contains(".") && !input.contains(" ") {
             input = "https://\(input)"
         } else {
-            // Treat as Google search
+            // Treat as DuckDuckGo search (Privacy First)
             let query = input.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? input
-            input = "https://www.google.com/search?q=\(query)"
+            input = "https://duckduckgo.com/?q=\(query)"
         }
 
         currentTab.webView.load(input)
