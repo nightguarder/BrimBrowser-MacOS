@@ -5,7 +5,8 @@
 //  Created by Devansh Rai on 17/9/25.
 //
 
-import Foundation
+import SwiftUI
+import WebKit
 
 final class TabManager: ObservableObject {
     @Published var tabs: [BrowserTab] = []
@@ -55,12 +56,20 @@ final class TabManager: ObservableObject {
     }
 
     func loadCurrent() {
-        guard let currentTab = currentTab else { return }
+        print("DEBUG: TabManager loadCurrent() called with text: '\(addressBarText)'")
+        guard let currentTab = currentTab else { 
+            print("DEBUG: loadCurrent failed - currentTab is nil")
+            return 
+        }
         var input = addressBarText.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if input.isEmpty {
+            print("DEBUG: loadCurrent detected empty input")
             return
         }
+        
+        // Remove focus from all elements by injecting script
+        currentTab.webView.webView.evaluateJavaScript("document.activeElement.blur()") { _, _ in }
 
         // If input looks like a URL (contains a dot or starts with http)
         if input.starts(with: "http://") || input.starts(with: "https://") {
@@ -73,6 +82,7 @@ final class TabManager: ObservableObject {
             input = "https://duckduckgo.com/?q=\(query)"
         }
 
+        print("DEBUG: loadCurrent loading URL: \(input)")
         currentTab.webView.load(input)
         currentTab.url = input
     }
