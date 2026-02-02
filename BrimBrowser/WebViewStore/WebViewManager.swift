@@ -23,12 +23,23 @@ final class WebViewManager: NSObject, ObservableObject, WKNavigationDelegate {
     @Published var canGoForward: Bool = false
     @Published var isLoading: Bool = false
     @Published var progress: Double = 0.0
+    @Published var zoomLevel: Double = 1.0
+
+    // Shared process pool for memory efficiency across all tabs
+    private static let sharedProcessPool = WKProcessPool()
 
     override init() {
         let config = WKWebViewConfiguration()
+        config.processPool = Self.sharedProcessPool
+        
         webView = WKWebView(frame: .zero, configuration: config)
         super.init()
         webView.navigationDelegate = self
+        
+        // Apply Ad/Tracker Blocking
+        ContentBlockerManager.shared.applyBlocklist(to: config) {
+            // Rules applied
+        }
 
         // Observe loading progress
         webView.addObserver(self, forKeyPath: "estimatedProgress", options: .new, context: nil)
@@ -60,6 +71,22 @@ final class WebViewManager: NSObject, ObservableObject, WKNavigationDelegate {
 
     func stopLoading() {
         webView.stopLoading()
+    }
+
+    // Zoom Controls
+    func zoomIn() {
+        zoomLevel += 0.1
+        webView.pageZoom = zoomLevel
+    }
+
+    func zoomOut() {
+        zoomLevel = max(0.25, zoomLevel - 0.1)
+        webView.pageZoom = zoomLevel
+    }
+
+    func resetZoom() {
+        zoomLevel = 1.0
+        webView.pageZoom = 1.0
     }
 
     // KVO observer for progress

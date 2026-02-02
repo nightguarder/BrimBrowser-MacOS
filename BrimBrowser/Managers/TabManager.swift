@@ -37,6 +37,23 @@ final class TabManager: ObservableObject {
         addressBarText = tab.url
     }
 
+    func nextTab() {
+        guard let current = currentTab, let index = tabs.firstIndex(where: { $0.id == current.id }) else { return }
+        let nextIndex = (index + 1) % tabs.count
+        switchToTab(tabs[nextIndex])
+    }
+
+    func previousTab() {
+        guard let current = currentTab, let index = tabs.firstIndex(where: { $0.id == current.id }) else { return }
+        let prevIndex = (index - 1 + tabs.count) % tabs.count
+        switchToTab(tabs[prevIndex])
+    }
+
+    func switchToIndex(_ index: Int) {
+        guard index >= 0 && index < tabs.count else { return }
+        switchToTab(tabs[index])
+    }
+
     func loadCurrent() {
         guard let currentTab = currentTab else { return }
         var input = addressBarText.trimmingCharacters(in: .whitespacesAndNewlines)
