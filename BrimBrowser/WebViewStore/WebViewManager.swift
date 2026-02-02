@@ -5,14 +5,6 @@
 //  Created by Devansh Rai on 17/9/25.
 //
 
-
-//
-//  WebViewManager.swift
-//  BrimBrowser
-//
-//  Created by Devansh Rai on 10/9/25.
-//
-
 import SwiftUI
 import WebKit
 
@@ -24,6 +16,7 @@ final class WebViewManager: NSObject, ObservableObject, WKNavigationDelegate, WK
     @Published var isLoading: Bool = false
     @Published var progress: Double = 0.0
     @Published var zoomLevel: Double = 1.0
+    @Published var title: String? = nil
 
     // Shared process pool for memory efficiency across all tabs
     private static let sharedProcessPool = WKProcessPool()
@@ -78,12 +71,14 @@ final class WebViewManager: NSObject, ObservableObject, WKNavigationDelegate, WK
             // Rules applied
         }
 
-        // Observe loading progress
+        // Observe loading progress and title
         webView.addObserver(self, forKeyPath: "estimatedProgress", options: .new, context: nil)
+        webView.addObserver(self, forKeyPath: "title", options: .new, context: nil)
     }
 
     deinit {
         webView.removeObserver(self, forKeyPath: "estimatedProgress")
+        webView.removeObserver(self, forKeyPath: "title")
     }
 
     // Load a webpage from a given string (auto-fixes if missing "https://")
@@ -126,12 +121,16 @@ final class WebViewManager: NSObject, ObservableObject, WKNavigationDelegate, WK
         webView.pageZoom = 1.0
     }
 
-    // KVO observer for progress
+    // KVO observer for progress and title
     override func observeValue(forKeyPath keyPath: String?, of object: Any?,
                                change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "estimatedProgress" {
             DispatchQueue.main.async {
                 self.progress = self.webView.estimatedProgress
+            }
+        } else if keyPath == "title" {
+            DispatchQueue.main.async {
+                self.title = self.webView.title
             }
         }
     }
