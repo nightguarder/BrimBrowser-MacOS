@@ -6,10 +6,8 @@ Built with **SwiftUI** and **WKWebView**, it offers a minimal, fast, and highly 
 
 Following a philosophy of being **"Lightweight, Safe, and Invisible,"** BrimBrowser is tailored for development tasks and power users who need a memory-efficient alternative that respects privacy without the bloat.
 
-**_!NOTE:_**
-
-> This project is a fork of [idevanshrai/BrimBrowser-MacOS](https://github.com/idevanshrai/BrimBrowser-MacOS).
-
+**_Archived!_**
+> The project is now available under Swift Browser repository here: [nightguarder/Swift-Browser](https://github.com/nightguarder/Swift-Browser)
 ---
 
 ## ✨ Features
